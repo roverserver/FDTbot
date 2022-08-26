@@ -4,3 +4,12 @@
 # ignore fdt data
 fdt.txt
 archiv.txt
+
+# ignore vscode settings
+.vscode/
+
+#ignore cronjob log
+log.txt
+
+#ignore custom send.sh
+send.sh
