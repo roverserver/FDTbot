@@ -9,7 +9,7 @@ git clone https://github.com/roverserver/FDTbot.git
 cd FDTbot
 cp example.env .env
 touch fdt.txt
-touch fdt.txt
+touch archiv.txt
 ```
 
 - edit .env
