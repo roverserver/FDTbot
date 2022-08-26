@@ -4,7 +4,7 @@ import discord
 
 load_dotenv()
 TOKEN = os.getenv('BOT_TOKEN')
-CONTROL_CHANNEL = os.getenv('CONTROL_CHANNEL')
+CONTROL_CHANNEL = int(os.getenv('CONTROL_CHANNEL'))
 
 intents = discord.Intents.default()
 intents.message_content = True
