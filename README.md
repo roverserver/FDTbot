@@ -9,6 +9,7 @@ git clone https://github.com/roverserver/FDTbot.git
 cd FDTbot
 cp example.env .env
 cp example.send.sh send.sh
+chmod +x send.sh
 touch fdt.txt
 touch archiv.txt
 ```
