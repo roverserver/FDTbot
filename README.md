@@ -17,4 +17,4 @@ touch archiv.txt
 - set current directory in send.sh
 - create cron job for send.sh
 
-start bot to add questions from discord with `python3 edit.py'
+start bot to add questions from discord with `python3 edit.py`
