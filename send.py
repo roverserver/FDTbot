@@ -20,9 +20,9 @@ with open('fdt.txt', 'r') as f:
     fdt = f.readline()
 
 if len(fdt) == 0:
-    asyncio.run(webhook_send("Keine <@&" + PING_ROLE_ID + "> mehr!", WARN_WEBHOOK))
+    asyncio.run(webhook_send(f"Keine <@&{PING_ROLE_ID}> mehr!", WARN_WEBHOOK))
 else:
-    message = '<@&' + PING_ROLE_ID + '>' + fdt.split('\n')[0]
+    message = f"<@&{PING_ROLE_ID}>" + fdt.split('\n')[0]
 
     #send message to discord webhook
     asyncio.run(webhook_send(message, FDT_WEBHOOK))

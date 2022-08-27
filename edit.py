@@ -28,7 +28,7 @@ async def on_message(message):
                 f.write(message.content.split('f!add ')[1] + '\n')
         if message.content.startswith('f!remove '):
             index = message.content.split('f!remove ')[1]
-            await message.channel.send('Nachricht Nr: ' + index + ' entfernt!')
+            await message.channel.send(f"Nachricht Nr: {index} entfernt!")
             with open('fdt.txt', 'r') as f:
                 fdt = f.readlines()
             with open('fdt.txt', 'w') as f:
@@ -38,6 +38,6 @@ async def on_message(message):
             with open('fdt.txt', 'r') as f:
                 fdt = f.readlines()
             for index, line in enumerate(fdt):
-                await message.channel.send( str(index) + ': ' + line)
+                await message.channel.send( f"**{index}:** {line}")
 
 client.run(TOKEN)
