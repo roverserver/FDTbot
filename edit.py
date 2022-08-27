@@ -47,7 +47,8 @@ async def on_message(message):
                 await message.channel.send(f"**{index}:** {line}")
         if message.content.startswith(f'{PREFIX}edit '):
             index = message.content.split(f'{PREFIX}edit ')[1].split(' ')[0]
-            new_message = message.content.split(f'{PREFIX}edit ')[1].split(' ')[1:]
+            new_message = message.content.split(f'{PREFIX}edit ')[
+                1].split(' ')[1:]
             with open('fdt.txt', 'r') as f:
                 fdt = f.readlines()
             with open('geloescht.txt', 'w') as f:
@@ -67,11 +68,11 @@ async def on_message(message):
             await message.channel.send('Alle Fragen gelöscht!')
         if message.content.startswith(f'{PREFIX}help'):
             await message.channel.send(f'\
-            `{PREFIX}add <Frage>` - Fügt eine Frage hinzu\n\
-            `{PREFIX}remove <Nr>` - Entfernt eine Frage\n\
-            `{PREFIX}list` - Listet alle Fragen auf\n\
-            `{PREFIX}edit <Nr> <Frage>` - Ändert eine Frage\n\
-            `{PREFIX}clear` - Löscht alle Fragen')
+`{PREFIX}add <Frage>` - Fügt eine Frage hinzu\n\
+`{PREFIX}remove <Nr>` - Entfernt eine Frage\n\
+`{PREFIX}list` - Listet alle Fragen auf\n\
+`{PREFIX}edit <Nr> <Frage>` - Ändert eine Frage\n\
+`{PREFIX}clear` - Löscht alle Fragen')
 
 
 bot.run(TOKEN)
