@@ -29,7 +29,9 @@ async def on_message(message):
         if message.content.startswith(f'{PREFIX}add '):
             with open('fdt.txt', 'a') as f:
                 f.write(message.content.split(f'{PREFIX}add ')[1] + '\n')
-            await message.channel.send('Frage hinzugefügt!')
+            with open('fdt.txt', 'r') as f:
+                index = len(f.readlines()) - 1
+            await message.channel.send(f'Frage an Stelle {index} hinzugefügt!')
         if message.content.startswith(f'{PREFIX}remove '):
             index = message.content.split(f'{PREFIX}remove ')[1]
             with open('fdt.txt', 'r') as f:
@@ -38,7 +40,8 @@ async def on_message(message):
                 f.writelines(fdt[:int(index)] + fdt[int(index)+1:])
             with open('geloescht.txt', 'a') as f:
                 f.write(fdt[int(index)])
-            await message.channel.send(f'Frage Nr: {index} entfernt!\n"{fdt[int(index)]}" wurde gelöscht')
+            frage = fdt[int(index)].strip('\n')
+            await message.channel.send(f'Frage Nr: {index} entfernt!\n"{frage}" wurde gelöscht')
         if message.content.startswith(f'{PREFIX}list'):
             with open('fdt.txt', 'r') as f:
                 fdt = f.readlines()
@@ -47,16 +50,27 @@ async def on_message(message):
                 await message.channel.send(f"**{index}:** {line}")
         if message.content.startswith(f'{PREFIX}edit '):
             index = message.content.split(f'{PREFIX}edit ')[1].split(' ')[0]
-            new_message = message.content.split(f'{PREFIX}edit ')[
-                1].split(' ')[1:]
+            new_message = ' '.join(message.content.split(
+                f'{PREFIX}edit ')[1].split(' ')[1:])
             with open('fdt.txt', 'r') as f:
                 fdt = f.readlines()
             with open('geloescht.txt', 'w') as f:
                 f.write(fdt[int(index)])
             with open('fdt.txt', 'w') as f:
                 f.writelines(
-                    fdt[:int(index)] + [' '.join(new_message) + '\n'] + fdt[int(index)+1:])
-            await message.channel.send(f'Frage Nr: {index} geändert!\n"{fdt[int(index)]}" wurde gelöscht')
+                    fdt[:int(index)] + [new_message + '\n'] + fdt[int(index)+1:])
+            frage = fdt[int(index)].strip('\n')
+            await message.channel.send(f'Frage Nr: {index} geändert!\n"{frage}" wurde gelöscht')
+        if message.content.startswith(f'{PREFIX}insert'):
+            index = message.content.split(f'{PREFIX}insert ')[1].split(' ')[0]
+            new_message = ' '.join(message.content.split(
+                f'{PREFIX}insert ')[1].split(' ')[1:])
+            with open('fdt.txt', 'r') as f:
+                fdt = f.readlines()
+            with open('fdt.txt', 'w') as f:
+                f.writelines(
+                    fdt[:int(index)] + [new_message + '\n'] + fdt[int(index):])
+            await message.channel.send(f'Frage an Stelle {index} eingefügt!')
         if message.content.startswith(f'{PREFIX}clear'):
             with open('fdt.txt', 'r') as f:
                 fdt = f.readlines()
@@ -72,6 +86,7 @@ async def on_message(message):
 `{PREFIX}remove <Nr>` - Entfernt eine Frage\n\
 `{PREFIX}list` - Listet alle Fragen auf\n\
 `{PREFIX}edit <Nr> <Frage>` - Ändert eine Frage\n\
+`{PREFIX}insert <Nr> <Frage>` - Fügt eine Frage an dieser Stelle ein\n\
 `{PREFIX}clear` - Löscht alle Fragen')
 
 
