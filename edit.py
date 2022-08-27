@@ -1,66 +1,61 @@
-from ntpath import join
 import os
 from dotenv import load_dotenv
 import discord
 
 load_dotenv()
 TOKEN = os.getenv('BOT_TOKEN')
-CONTROL_CHANNEL = int(os.getenv('CONTROL_CHANNEL'))
 
-intents = discord.Intents.default()
-intents.message_content = True
-
-
-bot = discord.Bot(intents=intents)
+bot = discord.Bot()
 
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
 
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
-    # check if the message is in the control channel
-    if message.channel.id == CONTROL_CHANNEL:
-        if message.content.startswith('f!add '):
-            with open('fdt.txt', 'a') as f:
-                f.write(message.content.split('f!add ')[1] + '\n')
-            await message.channel.send('Frage hinzugefügt!')
-        if message.content.startswith('f!remove '):
-            index = message.content.split('f!remove ')[1]
-            with open('fdt.txt', 'r') as f:
-                fdt = f.readlines()
-            with open('fdt.txt', 'w') as f:
-                f.writelines(fdt[:int(index)] + fdt[int(index)+1:])
-            with open('geloescht.txt', 'a') as f:
-                f.write(fdt[int(index)])
-            await message.channel.send(f'Frage Nr: {index} entfernt!\n"{fdt[int(index)]}" wurde gelöscht')
-        if message.content.startswith('f!list'):
-            with open('fdt.txt', 'r') as f:
-                fdt = f.readlines()
-            await message.channel.send(f"**Es sind {len(fdt)} Fragen in der Liste:**")
-            for index, line in enumerate(fdt):
-                await message.channel.send( f"**{index}:** {line}")
-        if message.content.startswith('f!edit '):
-            index = message.content.split('f!edit ')[1].split(' ')[0]
-            new_message = message.content.split('f!edit ')[1].split(' ')[1:]
-            with open('fdt.txt', 'r') as f:
-                fdt = f.readlines()
-            with open('geloescht.txt', 'w') as f:
-                f.write(fdt[int(index)])
-            with open('fdt.txt', 'w') as f:
-                f.writelines(fdt[:int(index)] + [' '.join(new_message) + '\n'] + fdt[int(index)+1:])
-            await message.channel.send(f'Frage Nr: {index} geändert!\n"{fdt[int(index)]}" wurde gelöscht')
-        if message.content.startswith('f!clear'):
-            with open('fdt.txt', 'r') as f:
-                fdt = f.readlines()
-            with open('geloescht.txt', 'w') as f:
-                for line in fdt:
-                    f.write(line)
-            with open('fdt.txt', 'w') as f:
-                f.writelines('')
-            await message.channel.send('Alle Fragen gelöscht!')
+
+@bot.command(name="add", description="Fügt eine Frage hinzu")
+async def add(ctx, frage: str):
+    with open('fdt.txt', 'a') as f:
+        f.write(frage + '\n')
+    await ctx.respond('Frage hinzugefügt!')
+
+@bot.command(name="remove", description="Entfernt eine Frage")
+async def remove(ctx, index: int):
+    with open('fdt.txt', 'r') as f:
+        fdt = f.readlines()
+    with open('fdt.txt', 'w') as f:
+        f.writelines(fdt[:int(index)] + fdt[int(index)+1:])
+    with open('geloescht.txt', 'a') as f:
+        f.write(fdt[int(index)])
+    await ctx.respond(f"Frage Nr: {index} entfernt!")
+
+@bot.command(name="list", description="Listet alle Fragen auf")
+async def list(ctx):
+    with open('fdt.txt', 'r') as f:
+        fdt = f.readlines()
+    await ctx.respond(f"**Es sind {len(fdt)} Fragen in der Liste:**")
+    for index, line in enumerate(fdt):
+        await ctx.send( f"**{index}:** {line}")
+
+@bot.command(name="clear", description="Löscht alle Fragen")
+async def clear(ctx):
+    with open('fdt.txt', 'r') as f:
+        fdt = f.readlines()
+    with open('geloescht.txt', 'w') as f:
+        for line in fdt:
+            f.write(line)
+    with open('fdt.txt', 'w') as f:
+        f.writelines('')
+    await ctx.respond('Alle Fragen gelöscht!')
+
+@bot.command(name="edit", description="Ändert eine Frage")
+async def edit(ctx, index: int, frage: str):
+    with open('fdt.txt', 'r') as f:
+        fdt = f.readlines()
+    with open('geloescht.txt', 'w') as f:
+        f.write(fdt[int(index)])
+    with open('fdt.txt', 'w') as f:
+        f.writelines(fdt[:int(index)] + [frage + "\n"] + fdt[int(index)+1:])
+    await ctx.respond(f"Frage Nr: {index} geändert!")
 
 
 bot.run(TOKEN)
