@@ -12,6 +12,7 @@ cp example.send.sh send.sh
 chmod +x send.sh
 touch fdt.txt
 touch archiv.txt
+touch geloescht.txt
 ```
 
 - edit .env

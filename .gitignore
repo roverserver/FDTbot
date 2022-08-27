@@ -4,6 +4,7 @@
 # ignore fdt data
 fdt.txt
 archiv.txt
+geloescht.txt
 
 # ignore vscode settings
 .vscode/
