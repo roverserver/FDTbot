@@ -1,5 +1,6 @@
 from ntpath import join
 import os
+import subprocess
 from dotenv import load_dotenv
 import discord
 
@@ -80,6 +81,10 @@ async def on_message(message):
             with open('fdt.txt', 'w') as f:
                 f.writelines('')
             await message.channel.send('Alle Fragen gelöscht!')
+        if message.content.startswith(f'{PREFIX}send'):
+            process = subprocess.Popen('./send.sh', shell=True)
+            process.wait()
+            await message.channel.send('Frage versendet!')
         if message.content.startswith(f'{PREFIX}help'):
             await message.channel.send(f'\
 `{PREFIX}add <Frage>` - Fügt eine Frage hinzu\n\
@@ -87,7 +92,8 @@ async def on_message(message):
 `{PREFIX}list` - Listet alle Fragen auf\n\
 `{PREFIX}edit <Nr> <Frage>` - Ändert eine Frage\n\
 `{PREFIX}insert <Nr> <Frage>` - Fügt eine Frage an dieser Stelle ein\n\
-`{PREFIX}clear` - Löscht alle Fragen')
+`{PREFIX}clear` - Löscht alle Fragen\n\
+`{PREFIX}send` - Sendet eine Frage des Tages manuell')
 
 
 bot.run(TOKEN)

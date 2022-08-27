@@ -19,14 +19,11 @@ async def webhook_send(message, url):
 with open('fdt.txt', 'r') as f:
     fdt = f.readline()
 
-if len(fdt) == 0:
-    asyncio.run(webhook_send(f"Keine <@&{PING_ROLE_ID}> mehr!", WARN_WEBHOOK))
-else:
-    message = f"<@&{PING_ROLE_ID}>" + fdt.split('\n')[0]
+if len(fdt) != 0:
+    message = f"<@&{PING_ROLE_ID}> " + fdt.split('\n')[0]
 
     #send message to discord webhook
     asyncio.run(webhook_send(message, FDT_WEBHOOK))
-
     #delete first line from fdt.txt file and append it to archive.txt file
     with open('fdt.txt', 'r') as f:
         fdt = f.readlines()
@@ -34,4 +31,14 @@ else:
         f.write(fdt[0])
     with open('fdt.txt', 'w') as f:
         f.writelines(fdt[1:])
+    
+    info = f"Frage gesendet. Es sind noch {len(fdt)-1} Fragen übrig"
+    if len(fdt) == 1:
+        info = "Keine weiteren Fragen mehr! Wir brauchen eine neue Frage für Morgen"
+    if len(fdt) == 0:
+        info = "Keine Fragen mehr! wir brauchen noch eine Frage für Heute"
+    if len(fdt) <= 3:
+        info = f"{info}\n<@&{PING_ROLE_ID}>"
+    asyncio.run(webhook_send(info, WARN_WEBHOOK))
+
 
