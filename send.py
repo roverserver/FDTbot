@@ -15,7 +15,8 @@ async def webhook_send(message, url):
     async with aiohttp.ClientSession() as session:
         webhook = discord.Webhook.from_url(url, session=session)
         await webhook.send(message)
-# open fdt.txt file and get first line
+
+
 with open('fdt.txt', 'r') as f:
     fdt = f.readline()
 
@@ -33,12 +34,13 @@ if len(fdt) != 0:
         f.writelines(fdt[1:])
     
     info = f"Frage gesendet. Es sind noch {len(fdt)-1} Fragen übrig"
-    if len(fdt) == 1:
-        info = "Keine weiteren Fragen mehr! Wir brauchen eine neue Frage für Morgen"
-    if len(fdt) == 0:
-        info = "Keine Fragen mehr! wir brauchen noch eine Frage für Heute"
-    if len(fdt) <= 3:
-        info = f"{info}\n<@&{PING_ROLE_ID}>"
-    asyncio.run(webhook_send(info, WARN_WEBHOOK))
+if len(fdt) == 1:
+    info = "Keine weiteren Fragen mehr! Wir brauchen eine neue Frage für Morgen"
+if len(fdt) == 0:
+    info = "Keine Fragen mehr! wir brauchen noch eine Frage für Heute\n\
+Füge eine neue Frage mit !fdt <Frage> hinzu und versende sie mit f!send"
+if len(fdt) <= 3:
+    info = f"{info}\n<@&{PING_ROLE_ID}>"
+asyncio.run(webhook_send(info, WARN_WEBHOOK))
 
 
