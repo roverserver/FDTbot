@@ -1,4 +1,3 @@
-from ntpath import join
 import os
 import subprocess
 from dotenv import load_dotenv
