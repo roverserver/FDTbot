@@ -2,12 +2,7 @@
 .env
 
 # ignore fdt data
-fdt.txt
-archiv.txt
-geloescht.txt
-
-times_no_fdt.txt
-wiederholt.txt
+data/
 
 # ignore vscode settings
 .vscode/

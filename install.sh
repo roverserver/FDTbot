@@ -7,18 +7,19 @@ git clone https://github.com/roverserver/FDTbot.git && cd FDTbot
 cp example.env .env
 
 # create "database"
-touch fdt.txt
-touch archiv.txt
-touch geloescht.txt
+mkdir data
+touch data/fdt.txt
+touch data/archiv.txt
+touch data/geloescht.txt
 
-touch times_no_fdt.txt
-touch wiederholt.txt
+touch data/times_no_fdt.txt
+touch data/wiederholt.txt
 
 echo "creating send.sh"
 # create send.sh - see example.send.sh for Reference
 echo "#!/bin/sh\ncd " > send.sh
 pwd >> send.sh
-echo " && python3 send.py >> log.txt" >> send.sh
+echo " && python3 send.py >> data/log.txt" >> send.sh
 chmod +x send.sh
 
 echo "getting dependencies"
