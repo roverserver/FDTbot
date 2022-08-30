@@ -11,6 +11,9 @@ touch fdt.txt
 touch archiv.txt
 touch geloescht.txt
 
+touch times_no_fdt.txt
+touch wiederholt.txt
+
 echo "creating send.sh"
 # create send.sh - see example.send.sh for Reference
 echo "#!/bin/sh\ncd " > send.sh

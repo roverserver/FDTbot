@@ -6,6 +6,9 @@ fdt.txt
 archiv.txt
 geloescht.txt
 
+times_no_fdt.txt
+wiederholt.txt
+
 # ignore vscode settings
 .vscode/
 
