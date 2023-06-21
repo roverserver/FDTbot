@@ -19,53 +19,49 @@ intents.message_content = True
 bot = discord.Bot(intents=intents)
 
 
-def add(content: str):
+def add_fdt(content: str):
     with open('fdt.txt', 'a') as f:
         f.write(content + '\n')
     with open('fdt.txt', 'r') as f:
         index = len(f.readlines()) - 1
-    return f'Frage an Stelle {index} hinzugefügt!'
+    return f'Frage "{content}" an Stelle {index} hinzugefügt!'
 
-def remove(index: int):
+def remove_fdt(index: int):
     with open('fdt.txt', 'r') as f:
-        fdt = f.readlines()
+        fragen = f.readlines()
     with open('fdt.txt', 'w') as f:
-        f.writelines(fdt[:index] + fdt[index+1:])
+        f.writelines(fragen[:index] + fragen[index+1:])
     with open('geloescht.txt', 'a') as f:
-        f.write(fdt[index])
-    frage = fdt[index].strip('\n')
+        f.write(fragen[index])
+    frage = fragen[index].strip('\n')
     return f'Frage Nr: {index} entfernt!\n "{frage}" wurde gelöscht'
 
-def list():
+def list_fdt():
     with open('fdt.txt', 'r') as f:
         fdt = f.readlines()
     return f'Es sind {len(fdt)} Fragen im Archiv\n' + ''.join([f'{index}: {frage}' for index, frage in enumerate(fdt)])
 
-def first2k(text: str):
-    """returns the first 2000 characters of a message"""
-    return text[:2000]
-
-def edit(index: int, content: str):
+def edit_fdt(index: int, content: str):
     with open('fdt.txt', 'r') as f:
-        fdt = f.readlines()
-    deleted = fdt[index]
+        fragen = f.readlines()
+    deleted = fragen[index]
     with open('geloescht.txt', 'a') as f:
         f.write(deleted)
-    fdt[index] = content + '\n'
+    fragen[index] = content + '\n'
     with open('fdt.txt', 'w') as f:
-        f.writelines(fdt)
+        f.writelines(fragen)
     deleted = deleted.strip('\n')
-    return f'Frage Nr: {index} bearbeitet!\n"{deleted}" wurde gelöscht'
+    return f'Frage Nr: {index} bearbeitet!\n"{deleted}" wurde durch "{content}" ersetzt'
 
-def insert(index: int, content: str):
+def insert_fdt(index: int, content: str):
     with open('fdt.txt', 'r') as f:
         fdt = f.readlines()
     fdt.insert(index, content + '\n')
     with open('fdt.txt', 'w') as f:
         f.writelines(fdt)
-    return f'Frage an Stelle {index} eingefügt!'
+    return f'Frage "{content}" an Stelle {index} eingefügt!'
 
-def clear():
+def clear_fdt():
     with open('fdt.txt', 'r') as f:
         fdt = f.readlines()
     with open('geloescht.txt', 'a') as f:
@@ -74,12 +70,12 @@ def clear():
         f.write('')
     return 'Alle Fragen gelöscht!'
 
-def send():
+def send_fdt():
     process = subprocess.Popen(f'../send.py {DATA_PATH}', shell=True)
     process.wait()
     return 'Frage wurde gesendet!'
 
-def help():
+def help_fdt():
     return f'`{PREFIX}add <Frage>` - Fügt eine Frage hinzu\n \
 `{PREFIX}remove <index>` - Entfernt eine Frage\n \
 `{PREFIX}list` - Listet alle Fragen auf\n \
@@ -94,6 +90,8 @@ def help():
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
 
+
+# old command handler
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
@@ -104,25 +102,61 @@ async def on_message(message):
         options = ' '.join(message.content.split(' ')[1:])
 
         if command == 'add':
-            response = add(options)
+            response = add_fdt(options)
         elif command == 'remove':
-            response = remove(int(options))
+            response = remove_fdt(int(options))
         elif command == 'list':
             response = list()
         elif command == 'edit':
-            response = edit(int(options.split(' ')[0]), ' '.join(options.split(' ')[1:]))
+            response = edit_fdt(int(options.split(' ')[0]), ' '.join(options.split(' ')[1:]))
         elif command == 'insert':
-            response = insert(int(options.split(' ')[0]), ' '.join(options.split(' ')[1:]))
+            response = insert_fdt(int(options.split(' ')[0]), ' '.join(options.split(' ')[1:]))
         elif command == 'clear':
-            response = clear()
+            response = clear_fdt()
         elif command == 'send':
-            response = send()
+            response = send_fdt()
         elif command == 'help':
-            response = help()
+            response = help_fdt()
         else:
             response = 'Unbekannter Befehl!\n' + help()
 
-        await message.channel.send(first2k(response))
+        await message.channel.send(response[:2000])
+
+# slash command handler
+@bot.command(description='Fügt eine Frage hinzu')
+async def add(ctx, frage: discord.Option(str, 'Die Frage, die hinzugefügt werden soll')):
+    print(f'/add: {frage}')
+    await ctx.respond(add_fdt(frage))
+
+@bot.command(description='Entfernt eine Frage')
+async def remove(ctx, index: discord.Option(int, 'Der Index der Frage, die entfernt werden soll (siehe /list)')):
+    print(f'/remove: {index}')
+    await ctx.respond(remove_fdt(index))
+
+@bot.command(description='Listet alle Fragen und ihre Indices auf')
+async def list(ctx):
+    print('/list')
+    await ctx.respond(list_fdt()[:2000])
+
+@bot.command(description='Bearbeitet eine Frage')
+async def edit(ctx, index: discord.Option(int, 'Der Index der Frage, die bearbeitet werden soll (siehe /list)'), frage: discord.Option(str, 'Korrigierte Frage')):
+    print(f'/edit: {index} {frage}')
+    await ctx.respond(edit_fdt(index, frage))
+
+@bot.command(description='Fügt eine Frage an einer bestimmten Stelle ein')
+async def insert(ctx, index: discord.Option(int, "An welcher Stelle soll die Frage eingefügt werden?"), frage: discord.Option(str,'Die Frage, die hinzugefügt werden soll')):
+    print(f'/insert: {index} {frage}')
+    await ctx.respond(insert_fdt(index, frage))
+
+@bot.command(description='Löscht alle Fragen')
+async def clear(ctx):
+    print('/clear')
+    await ctx.respond(clear_fdt())
+
+@bot.command(description='Sendet eine Frage')
+async def send(ctx):
+    print('/send')
+    await ctx.respond(send_fdt())
 
 print('Bot is connecting!')
 
