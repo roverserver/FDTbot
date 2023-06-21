@@ -1,11 +1,17 @@
+#!/usr/bin/python3
 from datetime import datetime
 import os
+import sys
 from random import random
 from dotenv import load_dotenv
 import discord
 import aiohttp
 import asyncio
 
+# get datapath from cliargs
+DATA_PATH = sys.argv[1]
+
+os.chdir(DATA_PATH)
 
 load_dotenv()
 # get webhook credentials from .env file
@@ -22,7 +28,7 @@ async def webhook_send(message, url):
         await webhook.send(message)
 
 
-with open('data/fdt.txt', 'r') as f:
+with open('fdt.txt', 'r') as f:
     fdt = f.readline()
 
 if len(fdt) != 0:
@@ -33,14 +39,14 @@ if len(fdt) != 0:
     asyncio.run(webhook_send(message, FDT_WEBHOOK))
     # print current time
     print(f"{datetime.now()} - sent fdt: {frage}")
-    # delete first line from data/fdt.txt file and append it to archive.txt file
-    with open('data/fdt.txt', 'r') as f:
+    # delete first line from fdt.txt file and append it to archive.txt file
+    with open('fdt.txt', 'r') as f:
         fdt = f.readlines()
-    with open('data/archiv.txt', 'a') as f:
+    with open('archiv.txt', 'a') as f:
         f.write(fdt[0])
-    with open('data/fdt.txt', 'w') as f:
+    with open('fdt.txt', 'w') as f:
         f.writelines(fdt[1:])
-    with open('data/times_no_fdt.txt', 'w') as f:
+    with open('times_no_fdt.txt', 'w') as f:
         f.write(str(0))
 
     info = f"Frage gesendet. Es sind noch {len(fdt)-1} Fragen übrig"
@@ -49,10 +55,10 @@ if len(fdt) == 1:
 if len(fdt) == 0:
     info = "Keine Fragen mehr! wir brauchen noch eine Frage für Heute\n\
 Füge eine neue Frage mit !fdt <Frage> hinzu und versende sie mit f!send"
-    with open('data/times_no_fdt.txt', 'r') as f:
+    with open('times_no_fdt.txt', 'r') as f:
         times_no_fdt = int(f.readline())
     if times_no_fdt >= TIMES_TO_WAIT and (times_no_fdt + 1) % (TIMES_TO_WAIT + 1) == 0:
-        with open('data/archiv.txt', 'r') as f:
+        with open('archiv.txt', 'r') as f:
             archiv = f.readlines()
         if len(archiv) < BUFFER:
             print(f"{datetime.now()} - no more fdt, but archive is too small")
@@ -66,12 +72,12 @@ Füge eine neue Frage mit !fdt <Frage> hinzu und versende sie mit f!send"
             asyncio.run(webhook_send("Alte frage versendet", WARN_WEBHOOK))
             # print without newline
             print(f"{datetime.now()} - sent old fdt: {frage}", end="")
-            with open('data/wiederholt.txt', 'a') as f:
+            with open('wiederholt.txt', 'a') as f:
                 f.write(frage)
     else:
         print(f"{datetime.now()} - no new fdt for {times_no_fdt+1} days")
 
-    with open('data/times_no_fdt.txt', 'w') as f:
+    with open('times_no_fdt.txt', 'w') as f:
         f.write(str(times_no_fdt+1))
     info = f"{info}\nseit {times_no_fdt+1} Tagen keine neue Frage mehr"
 if len(fdt) <= 3:
