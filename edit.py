@@ -8,10 +8,8 @@ TOKEN = os.getenv('BOT_TOKEN')
 CONTROL_CHANNEL = int(os.getenv('CONTROL_CHANNEL'))
 PREFIX = os.getenv('PREFIX')
 
-DATA_PATH = "data"
+os.makedirs("data", exist_ok=True)
 
-os.makedirs(DATA_PATH, exist_ok=True)
-os.chdir(DATA_PATH)
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -20,58 +18,58 @@ bot = discord.Bot(intents=intents)
 
 
 def add_fdt(content: str):
-    with open('fdt.txt', 'a') as f:
+    with open('data/fdt.txt', 'a') as f:
         f.write(content + '\n')
-    with open('fdt.txt', 'r') as f:
+    with open('data/fdt.txt', 'r') as f:
         index = len(f.readlines()) - 1
     return f'Frage "{content}" an Stelle {index} hinzugefügt!'
 
 def remove_fdt(index: int):
-    with open('fdt.txt', 'r') as f:
+    with open('data/fdt.txt', 'r') as f:
         fragen = f.readlines()
-    with open('fdt.txt', 'w') as f:
+    with open('data/fdt.txt', 'w') as f:
         f.writelines(fragen[:index] + fragen[index+1:])
-    with open('geloescht.txt', 'a') as f:
+    with open('data/geloescht.txt', 'a') as f:
         f.write(fragen[index])
     frage = fragen[index].strip('\n')
     return f'Frage Nr: {index} entfernt!\n "{frage}" wurde gelöscht'
 
 def list_fdt():
-    with open('fdt.txt', 'r') as f:
+    with open('data/fdt.txt', 'r') as f:
         fdt = f.readlines()
     return f'Es sind {len(fdt)} Fragen im Archiv\n' + ''.join([f'{index}: {frage}' for index, frage in enumerate(fdt)])
 
 def edit_fdt(index: int, content: str):
-    with open('fdt.txt', 'r') as f:
+    with open('data/fdt.txt', 'r') as f:
         fragen = f.readlines()
     deleted = fragen[index]
-    with open('geloescht.txt', 'a') as f:
+    with open('data/geloescht.txt', 'a') as f:
         f.write(deleted)
     fragen[index] = content + '\n'
-    with open('fdt.txt', 'w') as f:
+    with open('data/fdt.txt', 'w') as f:
         f.writelines(fragen)
     deleted = deleted.strip('\n')
     return f'Frage Nr: {index} bearbeitet!\n"{deleted}" wurde durch "{content}" ersetzt'
 
 def insert_fdt(index: int, content: str):
-    with open('fdt.txt', 'r') as f:
+    with open('data/fdt.txt', 'r') as f:
         fdt = f.readlines()
     fdt.insert(index, content + '\n')
-    with open('fdt.txt', 'w') as f:
+    with open('data/fdt.txt', 'w') as f:
         f.writelines(fdt)
     return f'Frage "{content}" an Stelle {index} eingefügt!'
 
 def clear_fdt():
-    with open('fdt.txt', 'r') as f:
+    with open('data/fdt.txt', 'r') as f:
         fdt = f.readlines()
-    with open('geloescht.txt', 'a') as f:
+    with open('data/geloescht.txt', 'a') as f:
         f.writelines(fdt)
-    with open('fdt.txt', 'w') as f:
+    with open('data/fdt.txt', 'w') as f:
         f.write('')
     return 'Alle Fragen gelöscht!'
 
 def send_fdt():
-    process = subprocess.Popen(f'../send.py {DATA_PATH}', shell=True)
+    process = subprocess.Popen(f'./send.py data/', shell=True)
     process.wait()
     return 'Frage wurde gesendet!'
 
@@ -106,7 +104,7 @@ async def on_message(message):
         elif command == 'remove':
             response = remove_fdt(int(options))
         elif command == 'list':
-            response = list()
+            response = list_fdt()
         elif command == 'edit':
             response = edit_fdt(int(options.split(' ')[0]), ' '.join(options.split(' ')[1:]))
         elif command == 'insert':
