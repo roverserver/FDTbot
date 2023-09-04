@@ -1,0 +1,23 @@
+version: '3'
+services:
+  fdtbot:
+    image: ghcr.io/roverserver/fdtbot
+    container_name: FDTbot
+    volumes:
+      - fdtdata:/app/data
+    environment:
+    # for edit.py
+      - BOT_TOKEN=  # your bot token
+      - PREFIX="f!" # prefix for commands
+      - CONTROL_CHANNEL= # channel for control commands
+    # for send.py
+      - FDT_WEBHOOK_URL= # Webhook URL for channel where to send FDT
+      - WARN_WEBHOOK_URL= # Webhook URL for channel where to send warnings and errors
+      - PING_ROLE_ID= # role id for ping role when sending FDT
+      - BUFFER=10 # buffer for how many recent questions to ignore when picking an old q
+      - TIMES_TO_WAIT=2 # how many times to wait, when there is no question in the queue before sending one from the archive  
+    restart: unless-stopped
+
+volumes:
+  fdtdata:
+
