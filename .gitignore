@@ -12,3 +12,6 @@ log.txt
 
 #ignore custom send.sh
 send.sh
+
+#ignore your docker-compose config
+docker-compose.yml
