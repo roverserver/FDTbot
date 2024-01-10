@@ -1,2 +1,2 @@
 # replace /app with your location for the fdt bot repo
-30 8 * * * /app/send.py /app/data >> /app/data/log.txt
+30 8 * * * docker exec FDTbot python send.py /app/data
